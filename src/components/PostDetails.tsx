@@ -12,7 +12,7 @@ interface Props {
   selectedPost: Post | null;
   isCommentLoading: boolean;
   comments: Comment[];
-  CommentError: boolean;
+  сommentError: boolean;
 }
 
 export const PostDetails: React.FC<Props> = ({
@@ -22,7 +22,7 @@ export const PostDetails: React.FC<Props> = ({
   isNewCommentOpen,
   isCommentLoading,
   comments,
-  CommentError,
+  сommentError,
 }) => {
   const [submitError, setSubmitError] = useState(false);
 
@@ -31,12 +31,16 @@ export const PostDetails: React.FC<Props> = ({
   }
 
   const handleDelete = (commentId: number) => {
+    const commentToRestore = comments.find(comment => comment.id === commentId);
+
     setComments(prev =>
       prev.filter(prevComment => prevComment.id !== commentId),
     );
 
     deleteComment(commentId).catch(() => {
-      setComments(prev => prev.filter(prevComment => prevComment));
+      if (commentToRestore) {
+        setComments(prev => [...prev, commentToRestore]);
+      }
     });
   };
 
@@ -52,7 +56,7 @@ export const PostDetails: React.FC<Props> = ({
         <Loader />
       ) : (
         <div className="block">
-          {submitError || CommentError ? (
+          {submitError || сommentError ? (
             <div className="notification is-danger" data-cy="CommentsError">
               Something went wrong
             </div>
@@ -65,7 +69,7 @@ export const PostDetails: React.FC<Props> = ({
           )}
 
           {!submitError &&
-            !CommentError &&
+            !сommentError &&
             comments.map(comment => {
               return (
                 <article
@@ -95,7 +99,7 @@ export const PostDetails: React.FC<Props> = ({
               );
             })}
 
-          {!isNewCommentOpen && !CommentError && !submitError && (
+          {!isNewCommentOpen && !сommentError && !submitError && (
             <button
               data-cy="WriteCommentButton"
               type="button"

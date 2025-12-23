@@ -7,7 +7,6 @@ interface Props {
   setIsNewCommentOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedPost: Post | null;
   posts: Post[];
-  userId: number | null;
 }
 
 export const PostsList: React.FC<Props> = ({
@@ -15,7 +14,6 @@ export const PostsList: React.FC<Props> = ({
   setSelectedPost,
   setIsNewCommentOpen,
   selectedPost,
-  userId,
 }) => {
   return (
     <div data-cy="PostsList">
@@ -31,33 +29,31 @@ export const PostsList: React.FC<Props> = ({
         </thead>
 
         <tbody>
-          {posts
-            .filter(post => post.userId === userId)
-            .map(post => {
-              return (
-                <tr data-cy="Post" key={post.id}>
-                  <td data-cy="PostId">{post.id}</td>
+          {posts.map(post => {
+            return (
+              <tr data-cy="Post" key={post.id}>
+                <td data-cy="PostId">{post.id}</td>
 
-                  <td data-cy="PostTitle">{post.title}</td>
+                <td data-cy="PostTitle">{post.title}</td>
 
-                  <td className="has-text-right is-vcentered">
-                    <button
-                      type="button"
-                      data-cy="PostButton"
-                      className={classNames('button is-link', {
-                        'is-light': selectedPost?.id !== post.id,
-                      })}
-                      onClick={() => {
-                        setSelectedPost(selectedPost === post ? null : post);
-                        setIsNewCommentOpen(false);
-                      }}
-                    >
-                      {selectedPost?.id === post.id ? 'Close' : 'Open'}
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+                <td className="has-text-right is-vcentered">
+                  <button
+                    type="button"
+                    data-cy="PostButton"
+                    className={classNames('button is-link', {
+                      'is-light': selectedPost?.id !== post.id,
+                    })}
+                    onClick={() => {
+                      setSelectedPost(selectedPost === post ? null : post);
+                      setIsNewCommentOpen(false);
+                    }}
+                  >
+                    {selectedPost?.id === post.id ? 'Close' : 'Open'}
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

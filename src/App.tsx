@@ -23,7 +23,7 @@ export const App = () => {
   const [userId, setUserId] = useState<number | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [postError, setPostError] = useState(false);
-  const [CommentError, setCommentError] = useState(false);
+  const [сommentError, setCommentError] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPostsLoading, setIsPostLoading] = useState(false);
   const [isCommentLoading, setIsCommentLoading] = useState(false);
@@ -121,7 +121,6 @@ export const App = () => {
                       setSelectedPost={setSelectedPost}
                       selectedPost={selectedPost}
                       setIsNewCommentOpen={setIsNewCommentOpen}
-                      userId={userId}
                     />
                   ))}
               </div>
@@ -146,7 +145,7 @@ export const App = () => {
                 selectedPost={selectedPost}
                 isCommentLoading={isCommentLoading}
                 comments={comments}
-                CommentError={CommentError}
+                сommentError={сommentError}
               />
             </div>
           </div>
