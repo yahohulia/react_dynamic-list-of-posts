@@ -14,5 +14,5 @@ export const addPost = ({ userId, title, body }: Omit<Post, 'id'>) => {
 };
 
 export const deletePost = (postId: number) => {
-  return client.delete(`/post/${postId}`);
+  return client.delete(`/posts/${postId}`);
 };

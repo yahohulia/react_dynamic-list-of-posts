@@ -22,17 +22,15 @@ export const App = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [error, setError] = useState(false);
-  const [sidebarOpennedId, setSidebarOpennedId] = useState(0);
+  const [postError, setPostError] = useState(false);
+  const [CommentError, setCommentError] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPostsLoading, setIsPostLoading] = useState(false);
   const [isCommentLoading, setIsCommentLoading] = useState(false);
   const [isNewCommentOpen, setIsNewCommentOpen] = useState(false);
 
   useEffect(() => {
-    getUsers()
-      .then(setUsers)
-      .catch(() => setError(true));
+    getUsers().then(setUsers);
   }, []);
 
   useEffect(() => {
@@ -44,10 +42,9 @@ export const App = () => {
       try {
         setPosts([]);
         setSelectedPost(null);
-        setSidebarOpennedId(0);
         setComments([]);
         setIsNewCommentOpen(false);
-        setError(false);
+        setPostError(false);
 
         setIsPostLoading(true);
 
@@ -55,7 +52,7 @@ export const App = () => {
 
         setPosts(gettedPosts);
       } catch {
-        setError(true);
+        setPostError(true);
       } finally {
         setIsPostLoading(false);
       }
@@ -75,7 +72,7 @@ export const App = () => {
 
     getComments(selectedPost.id)
       .then(setComments)
-      .catch(() => setError(true))
+      .catch(() => setCommentError(true))
       .finally(() => setIsCommentLoading(false));
   }, [selectedPost]);
 
@@ -100,7 +97,7 @@ export const App = () => {
 
                 {isPostsLoading && <Loader />}
 
-                {error && (
+                {postError && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
@@ -110,7 +107,7 @@ export const App = () => {
                 )}
 
                 {userId &&
-                  !error &&
+                  !postError &&
                   (posts.length === 0 ? (
                     <div
                       className="notification is-warning"
@@ -122,9 +119,8 @@ export const App = () => {
                     <PostsList
                       posts={posts}
                       setSelectedPost={setSelectedPost}
-                      setSidebarOpennedId={setSidebarOpennedId}
+                      selectedPost={selectedPost}
                       setIsNewCommentOpen={setIsNewCommentOpen}
-                      sidebarOpennedId={sidebarOpennedId}
                       userId={userId}
                     />
                   ))}
@@ -139,7 +135,7 @@ export const App = () => {
               'is-parent',
               'is-8-desktop',
               'Sidebar',
-              { 'Sidebar--open': sidebarOpennedId > 0 },
+              { 'Sidebar--open': selectedPost && selectedPost?.id > 0 },
             )}
           >
             <div className="tile is-child box is-success ">
@@ -150,7 +146,7 @@ export const App = () => {
                 selectedPost={selectedPost}
                 isCommentLoading={isCommentLoading}
                 comments={comments}
-                error={error}
+                CommentError={CommentError}
               />
             </div>
           </div>

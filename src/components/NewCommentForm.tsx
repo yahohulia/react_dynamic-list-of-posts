@@ -5,10 +5,15 @@ import { addComment } from '../api/comments';
 
 interface Props {
   setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
+  setSubmitError: React.Dispatch<React.SetStateAction<boolean>>;
   postId: number | undefined;
 }
 
-export const NewCommentForm: React.FC<Props> = ({ setComments, postId }) => {
+export const NewCommentForm: React.FC<Props> = ({
+  setComments,
+  postId,
+  setSubmitError,
+}) => {
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState(false);
   const [email, setEmail] = useState('');
@@ -27,9 +32,10 @@ export const NewCommentForm: React.FC<Props> = ({ setComments, postId }) => {
   };
 
   const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     let hasError = false;
 
-    event.preventDefault();
+    setSubmitError(false);
 
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
@@ -66,7 +72,12 @@ export const NewCommentForm: React.FC<Props> = ({ setComments, postId }) => {
         setComments(prev => [...prev, createdComment]);
         setText('');
       })
-      .finally(() => setIsLoadingPost(false));
+      .catch(() => {
+        setSubmitError(true);
+      })
+      .finally(() => {
+        setIsLoadingPost(false);
+      });
   };
 
   return (
@@ -190,7 +201,6 @@ export const NewCommentForm: React.FC<Props> = ({ setComments, postId }) => {
         </div>
 
         <div className="control">
-          {/* eslint-disable-next-line react/button-has-type */}
           <button
             type="reset"
             className="button is-link is-light"

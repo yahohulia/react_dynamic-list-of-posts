@@ -3,20 +3,18 @@ import { Post } from '../types/Post';
 import classNames from 'classnames';
 
 interface Props {
-  setSidebarOpennedId: React.Dispatch<React.SetStateAction<number>>;
   setSelectedPost: React.Dispatch<React.SetStateAction<Post | null>>;
   setIsNewCommentOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  sidebarOpennedId: number;
+  selectedPost: Post | null;
   posts: Post[];
   userId: number | null;
 }
 
 export const PostsList: React.FC<Props> = ({
   posts,
-  setSidebarOpennedId,
   setSelectedPost,
   setIsNewCommentOpen,
-  sidebarOpennedId,
+  selectedPost,
   userId,
 }) => {
   return (
@@ -47,17 +45,14 @@ export const PostsList: React.FC<Props> = ({
                       type="button"
                       data-cy="PostButton"
                       className={classNames('button is-link', {
-                        'is-light': sidebarOpennedId !== post.id,
+                        'is-light': selectedPost?.id !== post.id,
                       })}
                       onClick={() => {
-                        setSelectedPost(post);
-                        setSidebarOpennedId(
-                          sidebarOpennedId === post.id ? 0 : post.id,
-                        );
+                        setSelectedPost(selectedPost === post ? null : post);
                         setIsNewCommentOpen(false);
                       }}
                     >
-                      {sidebarOpennedId === post.id ? 'Close' : 'Open'}
+                      {selectedPost?.id === post.id ? 'Close' : 'Open'}
                     </button>
                   </td>
                 </tr>

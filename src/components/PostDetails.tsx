@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Loader } from './Loader';
 import { NewCommentForm } from './NewCommentForm';
 import { Post } from '../types/Post';
@@ -12,7 +12,7 @@ interface Props {
   selectedPost: Post | null;
   isCommentLoading: boolean;
   comments: Comment[];
-  error: boolean;
+  CommentError: boolean;
 }
 
 export const PostDetails: React.FC<Props> = ({
@@ -22,18 +22,22 @@ export const PostDetails: React.FC<Props> = ({
   isNewCommentOpen,
   isCommentLoading,
   comments,
-  error,
+  CommentError,
 }) => {
+  const [submitError, setSubmitError] = useState(false);
+
   if (!selectedPost) {
     return null;
   }
 
   const handleDelete = (commentId: number) => {
-    deleteComment(commentId).then(() =>
-      setComments(prev =>
-        prev.filter(prevComment => prevComment.id !== commentId),
-      ),
+    setComments(prev =>
+      prev.filter(prevComment => prevComment.id !== commentId),
     );
+
+    deleteComment(commentId).catch(() => {
+      setComments(prev => prev.filter(prevComment => prevComment));
+    });
   };
 
   return (
@@ -48,7 +52,7 @@ export const PostDetails: React.FC<Props> = ({
         <Loader />
       ) : (
         <div className="block">
-          {error ? (
+          {submitError || CommentError ? (
             <div className="notification is-danger" data-cy="CommentsError">
               Something went wrong
             </div>
@@ -60,36 +64,38 @@ export const PostDetails: React.FC<Props> = ({
             <p className="title is-4">Comments:</p>
           )}
 
-          {comments.map(comment => {
-            return (
-              <article
-                className="message is-small"
-                data-cy="Comment"
-                key={comment.id}
-              >
-                <div className="message-header">
-                  <a href={`mailto:${comment.email}`} data-cy="CommentAuthor">
-                    {comment.name}
-                  </a>
-                  <button
-                    data-cy="CommentDelete"
-                    type="button"
-                    className="delete is-small"
-                    aria-label="delete"
-                    onClick={() => handleDelete(comment.id)}
-                  >
-                    delete button
-                  </button>
-                </div>
+          {!submitError &&
+            !CommentError &&
+            comments.map(comment => {
+              return (
+                <article
+                  className="message is-small"
+                  data-cy="Comment"
+                  key={comment.id}
+                >
+                  <div className="message-header">
+                    <a href={`mailto:${comment.email}`} data-cy="CommentAuthor">
+                      {comment.name}
+                    </a>
+                    <button
+                      data-cy="CommentDelete"
+                      type="button"
+                      className="delete is-small"
+                      aria-label="delete"
+                      onClick={() => handleDelete(comment.id)}
+                    >
+                      delete button
+                    </button>
+                  </div>
 
-                <div className="message-body" data-cy="CommentBody">
-                  {comment.body}
-                </div>
-              </article>
-            );
-          })}
+                  <div className="message-body" data-cy="CommentBody">
+                    {comment.body}
+                  </div>
+                </article>
+              );
+            })}
 
-          {!isNewCommentOpen && !error && (
+          {!isNewCommentOpen && !CommentError && !submitError && (
             <button
               data-cy="WriteCommentButton"
               type="button"
@@ -103,7 +109,11 @@ export const PostDetails: React.FC<Props> = ({
       )}
 
       {isNewCommentOpen && (
-        <NewCommentForm setComments={setComments} postId={selectedPost.id} />
+        <NewCommentForm
+          setComments={setComments}
+          postId={selectedPost.id}
+          setSubmitError={setSubmitError}
+        />
       )}
     </div>
   );
